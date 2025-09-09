@@ -21,11 +21,6 @@ const Modal = ({ setOpen }: { setOpen: React.Dispatch<React.SetStateAction<boole
         setQuery('');
     }
 
-    const handleResize = (event: UIEvent) => {
-        if (!openList && window.innerWidth < 640)
-            setOpenList(true);
-    }
-
     const handleDocClick = (event: MouseEvent) => {
         if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
             setOpen(false);
@@ -40,9 +35,7 @@ const Modal = ({ setOpen }: { setOpen: React.Dispatch<React.SetStateAction<boole
 
     useEffect(() => {
         document.addEventListener('click', handleDocClick);
-        window.addEventListener('resize', handleResize);
         return () => {
-            window.removeEventListener('resize', handleResize);
             document.removeEventListener('click', handleDocClick);
         }
     }, [])
@@ -144,6 +137,22 @@ const Modal = ({ setOpen }: { setOpen: React.Dispatch<React.SetStateAction<boole
                         }
                     </section>
                 </section>
+                <section
+                    className='flex flex-col items-start sm:hidden'
+                >
+                    <h3 className='text-md sm:text-neutral-400 p-4 text-neutral-700'>Other Cities</h3>
+                    <section className='grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 text-neutral-700 max-h-[10rem] sm:overflow-y-auto w-full'>
+                        {
+                            cities?.map((city: string, idx) => {
+                                return <article key={idx}>
+                                    <p
+                                        className='text-xs sm:text-sm select-none cursor-pointer hover:scale-98 hover:bg-orange-50 px-4 py-1.5 transition-all rounded-md'
+                                    >{city}</p>
+                                </article>
+                            })
+                        }
+                    </section>
+                </section>
                 <AnimatePresence>
                     {
                         openList &&
@@ -152,7 +161,7 @@ const Modal = ({ setOpen }: { setOpen: React.Dispatch<React.SetStateAction<boole
                             animate={{ height: 'auto' }}
                             exit={{ height: 0 }}
                             transition={{ duration: 0.2, ease: 'linear' }}
-                            className='flex flex-col items-start sm:items-center'
+                            className='hidden sm:flex flex-col items-center'
                         >
                             <h3 className='text-md sm:text-neutral-400 p-4 text-neutral-700'>Other Cities</h3>
                             <section className='grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 text-neutral-700 max-h-[10rem] sm:overflow-y-auto w-full'>
