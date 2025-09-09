@@ -3,271 +3,33 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, Search, X } from 'lucide-react';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { badges } from '@/data/badges';
+import { cities, topCities } from '@/data/cities';
+import { BadgeType, CityType } from '../common/interfaces/search.interface';
 
-type BadgeType = { title: string, image: string }
-type CityType = {name:string, image: string}
+const Modal = ({ setOpen }: { setOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
 
-const Modal = () => {
-
+    const modalRef = useRef<HTMLDivElement | null>(null);
     const [openList, setOpenList] = useState<boolean>(false);
     const [query, setQuery] = useState<string>('');
     const [searchResult, setSearchResult] = useState<string[]>([]);
 
-    const badges: BadgeType[] = [
-        {
-            title: 'FOR EVERY OCCASION',
-            image: '/assets/notation-1.png'
-        },
-        {
-            title: 'CURATED WITH CARE',
-            image: '/assets/notation-2.png'
-        },
-        {
-            title: 'PACKAGE WITH LOVE',
-            image: '/assets/notation-3.png'
-        },
-    ];
-
-    const topCities: CityType[] = [
-        {
-            name: 'Mumbai',
-            image: '/assets/cities_icon_1.png'
-        },
-        {
-            name: 'Delhi',
-            image: '/assets/cities_icon_2.png'
-        },
-        {
-            name: 'Gurgaon',
-            image: '/assets/cities_icon_6.png'
-        },
-        {
-            name: 'Bangalore',
-            image: '/assets/cities_icon_7.png'
-        },
-        {
-            name: 'Kolkata',
-            image: '/assets/cities_icon_3.png'
-        },
-        {
-            name: 'Pune',
-            image: '/assets/cities_icon_5.png'
-        },
-        {
-            name: 'Lucknow',
-            image: '/assets/cities_icon_9.png'
-        },
-        {
-            name: 'Jaipur',
-            image: '/assets/cities_icon_10.png'
-        },
-        {
-            name: 'Hyderabad',
-            image: '/assets/cities_icon_8.png'
-        },
-        {
-            name: 'Ahemdabad',
-            image: '/assets/cities_icon_4.png'
-        },
-    ];
-
-    const cities: string[] = [
-        "Agra",
-        "Ahmedabad",
-        "Ahmednagar",
-        "Aizawl",
-        "Ajmer",
-        "Akola",
-        "Aligarh",
-        "Allahabad (Prayagraj)",
-        "Alwar",
-        "Ambarnath",
-        "Ambattur",
-        "Amravati",
-        "Amritsar",
-        "Anantapur",
-        "Arrah",
-        "Asansol",
-        "Aurangabad",
-        "Avadi",
-        "Bagalkot",
-        "Bally",
-        "Baranagar",
-        "Barasat",
-        "Bardhaman",
-        "Bareilly",
-        "Bathinda",
-        "Begusarai",
-        "Belgaum",
-        "Bellary",
-        "Bengaluru",
-        "Berhampur",
-        "Bhadravati",
-        "Bharatpur",
-        "Bhavnagar",
-        "Bhilai",
-        "Bhilwara",
-        "Bhiwandi",
-        "Bhopal",
-        "Bhubaneswar",
-        "Bidar",
-        "Bihar Sharif",
-        "Bijapur",
-        "Bikaner",
-        "Bilaspur",
-        "Chandigarh",
-        "Chandrapur",
-        "Chennai",
-        "Chikmagalur",
-        "Chitradurga",
-        "Coimbatore",
-        "Cuttack",
-        "Darbhanga",
-        "Davanagere",
-        "Dehradun",
-        "Delhi",
-        "Dewas",
-        "Dhanbad",
-        "Dhule",
-        "Durg",
-        "Durgapur",
-        "Eluru",
-        "Erode",
-        "Etawah",
-        "Faridabad",
-        "Farrukhabad",
-        "Firozabad",
-        "Gadag-Betageri",
-        "Gandhinagar",
-        "Gaya",
-        "Ghaziabad",
-        "Gorakhpur",
-        "Gulbarga",
-        "Guntur",
-        "Gurgaon",
-        "Guwahati",
-        "Gwalior",
-        "Hapur",
-        "Haridwar",
-        "Hassan",
-        "Hospet",
-        "Howrah",
-        "Hubli-Dharwad",
-        "Hyderabad",
-        "Ichalkaranji",
-        "Imphal",
-        "Indore",
-        "Jabalpur",
-        "Jaipur",
-        "Jalandhar",
-        "Jalgaon",
-        "Jalna",
-        "Jammu",
-        "Jamnagar",
-        "Jamshedpur",
-        "Jhansi",
-        "Jodhpur",
-        "Junagadh",
-        "Kadapa",
-        "Kakinada",
-        "Kalyan-Dombivli",
-        "Kamarhati",
-        "Kanpur",
-        "Karimnagar",
-        "Karwar",
-        "Karnal",
-        "Kochi",
-        "Kolhapur",
-        "Kolar",
-        "Kollam",
-        "Kota",
-        "Kozhikode",
-        "Kulti",
-        "Kurnool",
-        "Lucknow",
-        "Latur",
-        "Loni",
-        "Ludhiana",
-        "Madurai",
-        "Maheshtala",
-        "Malegaon",
-        "Mangalore",
-        "Mandya",
-        "Mathura",
-        "Meerut",
-        "Mirzapur",
-        "Mira-Bhayandar",
-        "Moradabad",
-        "Mumbai",
-        "Muzaffarnagar",
-        "Muzaffarpur",
-        "Mysore",
-        "Nanded",
-        "Nashik",
-        "Navi Mumbai",
-        "Nellore",
-        "Nizamabad",
-        "Noida",
-        "North Dumdum",
-        "Ozhukarai",
-        "Pali",
-        "Panihati",
-        "Panipat",
-        "Parbhani",
-        "Patiala",
-        "Patna",
-        "Pondicherry",
-        "Pune",
-        "Purnia",
-        "Raichur",
-        "Raipur",
-        "Rajahmundry",
-        "Rajkot",
-        "Ramagundam",
-        "Ranchi",
-        "Ratlam",
-        "Rewa",
-        "Rohtak",
-        "Rourkela",
-        "Sagar",
-        "Saharanpur",
-        "Salem",
-        "Sangli-Miraj & Kupwad",
-        "Satna",
-        "Shimoga",
-        "Sikar",
-        "Siliguri",
-        "Silchar",
-        "Solapur",
-        "Sonipat",
-        "South Dumdum",
-        "Srinagar",
-        "Surat",
-        "Thane",
-        "Thoothukudi",
-        "Thrissur",
-        "Tiruchirappalli",
-        "Tirunelveli",
-        "Tirupati",
-        "Tiruppur",
-        "Tiruvottiyur",
-        "Udaipur",
-        "Udupi",
-        "Ujjain",
-        "Ulhasnagar",
-        "Vadodara",
-        "Varanasi",
-        "Vasai-Virar",
-        "Vijayawada",
-        "Visakhapatnam",
-        "Warangal"
-    ];
-
     const handleDropdown = (res: string) => {
         console.log(res);
-        
+
         setQuery('');
+    }
+
+    const handleResize = (event: UIEvent) => {
+        if (!openList && window.innerWidth < 640)
+            setOpenList(true);
+    }
+
+    const handleDocClick = (event: MouseEvent) => {
+        if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+            setOpen(false);
+        }
     }
 
     useEffect(() => {
@@ -276,15 +38,37 @@ const Modal = () => {
         else setSearchResult(result);
     }, [query]);
 
+    useEffect(() => {
+        document.addEventListener('click', handleDocClick);
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            document.removeEventListener('click', handleDocClick);
+        }
+    }, [])
+
     return (
         <section className='fixed inset-0 z-50 backdrop:blur-2xl bg-gray-300 text-black flex items-center justify-center'>
-            <section
+            <div
+                ref={modalRef}
                 className='flex flex-col relative py-4 px-8 sm:m-4 bg-gradient-to-t from-orange-100 to-orange-50 w-full h-full sm:h-auto sm:max-w-[54rem] sm:max-h-[90vh] overflow-y-auto border-0 rounded-xl gap-4 pt-0'
             >
                 <section className='flex flex-row-reverse sticky top-0 z-50 backdrop-blur-3xl py-2 pt-6 bg-orange-50 items-center'>
                     <p className='block text-center sm:hidden flex-1 font-semibold'>Pick a delivery location</p>
-                    <ChevronLeft className='cursor-pointer block sm:hidden text-black bg-white rounded-lg px-1.5 py-0.5 w-8 h-8' />
-                    <X className='cursor-pointer hidden sm:block text-black' />
+                    <button
+                        className='appearance-none'
+                        type='button'
+                        onClick={() => setOpen(false)}
+                    >
+                        <ChevronLeft className='cursor-pointer block sm:hidden text-black bg-white rounded-lg px-1.5 py-0.5 w-8 h-8' />
+                    </button>
+                    <button
+                        className='appearance-none'
+                        type='button'
+                        onClick={() => setOpen(false)}
+                    >
+                        <X className='cursor-pointer hidden sm:block text-black' />
+                    </button>
                 </section>
                 <section className='flex relative whitespace-nowrap bg-white items-center border-neutral-300 border-2 rounded-lg p-1.5 px-4'>
                     <Search className='text-neutral-400 pr-1' />
@@ -345,7 +129,7 @@ const Modal = () => {
                     <p className='text-neutral-600'>Top Cities</p>
                     <section className='flex flex-wrap gap-4 items-center justify-center'>
                         {
-                            topCities?.map((city: CityType, idx) => {
+                            topCities?.map((city: CityType, idx: number) => {
                                 return <article key={idx} className='flex flex-col items-center gap-2'>
                                     <Image
                                         alt={city?.name || 'icon for badge'}
@@ -368,10 +152,10 @@ const Modal = () => {
                             animate={{ height: 'auto' }}
                             exit={{ height: 0 }}
                             transition={{ duration: 0.2, ease: 'linear' }}
-                            className='flex flex-col items-center'
+                            className='flex flex-col items-start sm:items-center'
                         >
-                            <p className='text-md text-neutral-400 p-4'>Other Cities</p>
-                            <section className='grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 text-neutral-700 max-h-[10rem] overflow-y-auto w-full'>
+                            <h3 className='text-md sm:text-neutral-400 p-4 text-neutral-700'>Other Cities</h3>
+                            <section className='grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 text-neutral-700 max-h-[10rem] sm:overflow-y-auto w-full'>
                                 {
                                     cities?.map((city: string, idx) => {
                                         return <article key={idx}>
@@ -385,10 +169,10 @@ const Modal = () => {
                         </motion.div>
                     }
                 </AnimatePresence>
-                <section className='flex w-full justify-center items-center'>
+                <section className='sm:flex w-full justify-center items-center hidden'>
                     <button onClick={() => setOpenList(!openList)} type='button' className='text-md text-neutral-400 cursor-pointer'>{!openList ? 'Show All Cities' : 'Hide All Cities'}</button>
                 </section>
-            </section>
+            </div>
         </section>
     )
 }
